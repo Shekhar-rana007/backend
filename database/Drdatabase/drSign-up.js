@@ -1,23 +1,20 @@
 const express= require("express");
 const router= new express.Router();
-const drDetail=require("../../config/drschema")
+const drDetail=require("../../models/drschema")
 
-
-//------------------signup doctors--api-------------------------
-
-router.post("/drdata",async (req,res)=>{
+const drsignup=async (req,res)=>{
     const details= req.body;
     try{
     let doctor= new drDetail(details);
     let result= await doctor.save();
-   res.send(result);}
+   res.send(result)}
    
    catch(err){
-    res.status(400).json({result:err.message})
+    res.send(err)
    }
-});
-//--------------------------no of doctors are registered ------------------
-router.get("/regdoctor",async (req,res)=>{
+}
+
+const registeredDoc=async (req,res)=>{
     try{
     let doctor= await drDetail.find({});
 
@@ -26,12 +23,9 @@ router.get("/regdoctor",async (req,res)=>{
    catch(err){
     res.status(400).json({result:err.message})
    }
-})
+}
 
-
-// ---------------------------delete an unwanted doctor--------------------
-
-router.delete("/deletedoctor/:id",async(req,res)=>{
+const deleteDoc=async(req,res)=>{
     try{
 const result= await drDetail.deleteOne({_id:req.params.id});
 console.log(result);}
@@ -39,7 +33,18 @@ catch(err){
     console.log(err);
 }
 
-})
+}
+//------------------signup doctors--api-------------------------
+
+router.post("/drdata",drsignup);
+
+//--------------------------no of doctors are registered ------------------
+router.get("/regdoctor",registeredDoc)
+
+
+// ---------------------------delete an unwanted doctor--------------------
+
+router.delete("/deletedoctor/:id",deleteDoc)
 
 
 module.exports=router;
